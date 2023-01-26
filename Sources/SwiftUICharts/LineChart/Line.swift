@@ -9,6 +9,23 @@
 import SwiftUI
 
 public struct Line: View {
+    
+    private var areaMarkColor: LinearGradient {
+        return LinearGradient(
+            gradient: Gradient (
+                colors: [
+                    Colors.GradientPurple.opacity(0.5),
+                    Colors.GradientPurple.opacity(0.25),
+                    Colors.GradientPurple.opacity(0.12),
+                    Colors.GradientPurple.opacity(0.05),
+                    Colors.GradientPurple.opacity(0),
+                ]
+            ),
+            startPoint: .bottom,
+            endPoint: .top
+        )
+    }
+            
     @ObservedObject var data: ChartData
     @Binding var frame: CGRect
     @Binding var touchLocation: CGPoint
@@ -17,7 +34,7 @@ public struct Line: View {
     @Binding var maxDataValue: Double?
     @State private var showFull: Bool = false
     @State var showBackground: Bool = true
-    var gradient: GradientColor = GradientColor(start: Colors.GradientPurple, end: Colors.GradientNeonBlue)
+    var gradient: GradientColor = GradientColor(start: Colors.GradientPurple, end: Colors.GradientPurple)
     var index:Int = 0
     let padding:CGFloat = 30
     var curvedLines: Bool = true
@@ -62,18 +79,17 @@ public struct Line: View {
         ZStack {
             if(self.showFull && self.showBackground){
                 self.closedPath
-                    .fill(LinearGradient(gradient: Gradient(colors: [Colors.GradientUpperBlue, .white]), startPoint: .bottom, endPoint: .top))
+                    .fill(areaMarkColor)
                     .rotationEffect(.degrees(180), anchor: .center)
                     .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                     .transition(.opacity)
-                    .animation(.easeIn(duration: 1.6))
+
             }
             self.path
                 .trim(from: 0, to: self.showFull ? 1:0)
-                .stroke(LinearGradient(gradient: gradient.getGradient(), startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+                .stroke(LinearGradient(gradient: gradient.getGradient(), startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 1, lineJoin: .round))
                 .rotationEffect(.degrees(180), anchor: .center)
                 .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
-                .animation(Animation.easeOut(duration: 1.2).delay(Double(self.index)*0.4))
                 .onAppear {
                     self.showFull = true
             }
@@ -98,8 +114,37 @@ public struct Line: View {
 
 struct Line_Previews: PreviewProvider {
     static var previews: some View {
+        Group {
+            GeometryReader{ geometry in
+                Line(data: ChartData(points: [12,-230,10,54]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([12,-230,10,54].min()), maxDataValue: .constant([12,-230,10,54].max()))
+            }.frame(width: 320, height: 160)
+            
+            GeometryReader{ geometry in
+                Line(data: TestData.dataEmpty, frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([37,72,51,22,0,0,0,0,0].min()), maxDataValue: .constant([37,72,51,22,0,0,0,0,0].max()))
+            }.frame(width: 320, height: 160)
+
+        }
+    }
+}
+
+var baseDate = Date().timeIntervalSince1970
+
+
+struct Line_Previews2: PreviewProvider {
+//    let values = [
+//        baseDate.description: 12,
+//
+//
+//    ]
+    static var previews: some View {
         GeometryReader{ geometry in
-            Line(data: ChartData(points: [12,-230,10,54]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant(nil), maxDataValue: .constant(nil))
+            Line(data: ChartData(values: [
+                (baseDate.description, 12),
+                ((baseDate+1).description, -230),
+                ((baseDate+2).description, 10),
+                ((baseDate+3).description, 54)
+            ]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([12,-230,10,54].min()), maxDataValue: .constant([12,-230,10,54].max()))
         }.frame(width: 320, height: 160)
     }
 }
+//                                          [12,-230,10,54]
