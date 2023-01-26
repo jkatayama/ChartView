@@ -105,6 +105,27 @@ public struct Line: View {
         }
     }
     
+    public init(data: ChartData, frame: Binding<CGRect>, touchLocation: Binding<CGPoint>, showIndicator: Binding<Bool>, minDataValue: Binding<Double?>, maxDataValue: Binding<Double?>, showBackground: Bool = false, gradient: GradientColor? = nil, index: Int = 0) {
+        self.data = data
+        self._frame = frame
+        self._touchLocation = touchLocation
+        self._showIndicator = showIndicator
+        self._minDataValue = minDataValue
+        self._maxDataValue = maxDataValue
+        if let gradient {
+            self.gradient = gradient
+        }
+        
+        self.index = index
+        self.showBackground = showBackground
+        
+//        self._showFull = showFull
+//        self._showBackground = showBackground
+//        self._gradient = gradient
+//        self._index = index
+//        self._curvedLines = curvedLines
+    }
+    
     func getClosestPointOnPath(touchLocation: CGPoint) -> CGPoint {
         let closest = self.path.point(to: touchLocation.x)
         return closest
@@ -143,7 +164,7 @@ struct Line_Previews2: PreviewProvider {
                 ((baseDate+1).description, -230),
                 ((baseDate+2).description, 10),
                 ((baseDate+3).description, 54)
-            ]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([12,-230,10,54].min()), maxDataValue: .constant([12,-230,10,54].max()))
+            ]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([12,-230,10,54].min()), maxDataValue: .constant([12,-230,10,54].max()), showBackground: false, gradient: GradientColors.purple, index: 1)
         }.frame(width: 320, height: 160)
     }
 }
