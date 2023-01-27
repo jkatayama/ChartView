@@ -8,24 +8,8 @@
 
 import SwiftUI
 
-public struct Line: View {
-    
-    private var areaMarkColor: LinearGradient {
-        return LinearGradient(
-            gradient: Gradient (
-                colors: [
-                    Colors.GradientPurple.opacity(0.5),
-                    Colors.GradientPurple.opacity(0.25),
-                    Colors.GradientPurple.opacity(0.12),
-                    Colors.GradientPurple.opacity(0.05),
-                    Colors.GradientPurple.opacity(0),
-                ]
-            ),
-            startPoint: .bottom,
-            endPoint: .top
-        )
-    }
-            
+public struct Line: View {          
+    private let areaMarkColor: LinearGradient
     @ObservedObject var data: ChartData
     @Binding var frame: CGRect
     @Binding var touchLocation: CGPoint
@@ -33,10 +17,13 @@ public struct Line: View {
     @Binding var minDataValue: Double?
     @Binding var maxDataValue: Double?
     @State private var showFull: Bool = false
+    
+    // areaMark
     @State var showBackground: Bool = true
-    var gradient: GradientColor = GradientColor(start: Colors.GradientPurple, end: Colors.GradientPurple)
+    public let color: Color
+    private let gradient: Gradient// = GradientColor(start: color, end: color)
     var index:Int = 0
-    let padding:CGFloat = 30
+    let padding:CGFloat = 0
     var curvedLines: Bool = true
     var stepWidth: CGFloat {
         if data.points.count < 2 {
@@ -87,7 +74,7 @@ public struct Line: View {
             }
             self.path
                 .trim(from: 0, to: self.showFull ? 1:0)
-                .stroke(LinearGradient(gradient: gradient.getGradient(), startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 1, lineJoin: .round))
+                .stroke(LinearGradient(gradient: gradient, startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 1, lineJoin: .round))
                 .rotationEffect(.degrees(180), anchor: .center)
                 .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                 .onAppear {
@@ -105,19 +92,39 @@ public struct Line: View {
         }
     }
     
-    public init(data: ChartData, frame: Binding<CGRect>, touchLocation: Binding<CGPoint>, showIndicator: Binding<Bool>, minDataValue: Binding<Double?>, maxDataValue: Binding<Double?>, showBackground: Bool = false, gradient: GradientColor? = nil, index: Int = 0) {
+    public init(data: ChartData, frame: Binding<CGRect>, touchLocation: Binding<CGPoint>, showIndicator: Binding<Bool>, minDataValue: Binding<Double?>, maxDataValue: Binding<Double?>, showBackground: Bool = true, color: Color, index: Int = 0) {
         self.data = data
         self._frame = frame
         self._touchLocation = touchLocation
         self._showIndicator = showIndicator
         self._minDataValue = minDataValue
         self._maxDataValue = maxDataValue
-        if let gradient {
-            self.gradient = gradient
-        }
-        
         self.index = index
         self.showBackground = showBackground
+        self.color = color
+        
+        self.gradient = Gradient(colors: [color,color])
+        
+        self.areaMarkColor = LinearGradient(
+                        gradient: Gradient (
+                            colors: [
+                                color.opacity(0.5),
+                                color.opacity(0.25),
+                                color.opacity(0.12),
+                                color.opacity(0.05),
+                                color.opacity(0),
+                            ]
+                        ),
+                        startPoint: .bottom,
+                        endPoint: .top
+                    )
+
+//        ChartData(numberValues: [(0.1, 0.12)])
+//            gradient: ,
+//            startPoint: .top,
+//            endPoint: .bottom
+//        )
+//GradientColor(start: color, end: color)
         
 //        self._showFull = showFull
 //        self._showBackground = showBackground
@@ -137,35 +144,39 @@ struct Line_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             GeometryReader{ geometry in
-                Line(data: ChartData(points: [12,-230,10,54]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([12,-230,10,54].min()), maxDataValue: .constant([12,-230,10,54].max()))
+                Line(
+                    data: ChartData(points: [12,-230,10,54]),
+                     frame: .constant(geometry.frame(in: .local)),
+                     touchLocation: .constant(CGPoint(x: 100, y: 12)),
+                     showIndicator: .constant(true),
+                     minDataValue: .constant([12,-230,10,54].min()),
+                     maxDataValue: .constant([12,-230,10,54].max()),
+                     color: Colors.OrangeStart
+                )
             }.frame(width: 320, height: 160)
             
             GeometryReader{ geometry in
-                Line(data: TestData.dataEmpty, frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([37,72,51,22,0,0,0,0,0].min()), maxDataValue: .constant([37,72,51,22,0,0,0,0,0].max()))
+                Line(data: TestData.dataEmpty, frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([37,72,51,22,0,0,0,0,0].min()), maxDataValue: .constant([37,72,51,22,0,0,0,0,0].max()), color: Colors.color2Accent)
             }.frame(width: 320, height: 160)
+            
+            GeometryReader{ geometry in
+                Line(
+                    data: ChartData(numberValues: [
+                        (1674753304, 12),
+                        (1674753305, -230),
+                        (1674753306, 10),
+                        (1674753307, 54)
+                    ]),
+                     frame: .constant(geometry.frame(in: .local)),
+                     touchLocation: .constant(CGPoint(x: 100, y: 12)),
+                     showIndicator: .constant(true),
+                     minDataValue: .constant([12,-230,10,54].min()),
+                     maxDataValue: .constant([12,-230,10,54].max()),
+                     color: Colors.GradinetUpperBlue1
+                )
+            }.frame(width: 320, height: 160)
+
 
         }
     }
 }
-
-var baseDate = Date().timeIntervalSince1970
-
-
-struct Line_Previews2: PreviewProvider {
-//    let values = [
-//        baseDate.description: 12,
-//
-//
-//    ]
-    static var previews: some View {
-        GeometryReader{ geometry in
-            Line(data: ChartData(values: [
-                (baseDate.description, 12),
-                ((baseDate+1).description, -230),
-                ((baseDate+2).description, 10),
-                ((baseDate+3).description, 54)
-            ]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([12,-230,10,54].min()), maxDataValue: .constant([12,-230,10,54].max()), showBackground: false, gradient: GradientColors.purple, index: 1)
-        }.frame(width: 320, height: 160)
-    }
-}
-//                                          [12,-230,10,54]
