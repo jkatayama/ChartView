@@ -12,13 +12,14 @@ public struct LineChartView: View {
     // selected value when dragged
     var onValueSelected: (((Date, Double)?) -> ())
     @Binding var selectedValue: (Date, Double)?
-    private let color: Color
+    private let chartColor: Color
+    private let bgColor: Color
 
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @ObservedObject var data:ChartData
-    public var title: String
-    public var legend: String?
-    public var style: ChartStyle
+//    public var title: String
+//    public var legend: String?
+//    public var style: ChartStyle
 //    public var darkModeStyle: ChartStyle
     
     public var formSize:CGSize
@@ -38,15 +39,16 @@ public struct LineChartView: View {
 //        }
 //    }
     var frame = CGSize(width: 180, height: 120)
-    private var rateValue: Int?
+//    private var rateValue: Int?
     
     public init(data: [(Date, Double)],
-                title: String,
-                legend: String? = nil,
-                color: Color,
-                style: ChartStyle = Styles.lineChartStyleOne,
+//                title: String,
+//                legend: String? = nil,
+                chartColor: Color,
+                bgColor: Color = .white,
+//                style: ChartStyle = Styles.lineChartStyleOne,
                 form: CGSize? = ChartForm.extraLarge,
-                rateValue: Int?,
+//                rateValue: Int?,
 //                dropShadow: Bool? = true,
 //                valueSpecifier: String? = "%.1f",
                 currentValue: Binding<Double?>,
@@ -56,23 +58,25 @@ public struct LineChartView: View {
         self._selectedValue = selectedValue
         self.onValueSelected = onValueSelected
         self.data = ChartData(numberValues: data.map { ($0.0.timeIntervalSince1970, $0.1) })
-        self.title = title
-        self.legend = legend
-        self.style = style
+//        self.title = title
+//        self.legend = legend
+//        self.style = style
 //        self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
         self.formSize = form!
         frame = CGSize(width: self.formSize.width, height: self.formSize.height/2)
 //        self.dropShadow = dropShadow!
 //        self.valueSpecifier = valueSpecifier!
-        self.rateValue = rateValue
+//        self.rateValue = rateValue
         self._currentValue = currentValue
-        self.color = color
+        self.chartColor = chartColor
+        self.bgColor = bgColor
+
     }
     
     public var body: some View {
         ZStack(alignment: .center){
             RoundedRectangle(cornerRadius: 20)
-                .fill(self.style.backgroundColor)
+                .fill(self.bgColor)
                 .frame(width: frame.width, height: 240, alignment: .center)
 //                .shadow(color: self.style.dropShadowColor, radius: self.dropShadow ? 8 : 0)
             VStack(alignment: .leading){
@@ -121,7 +125,9 @@ public struct LineChartView: View {
                          showIndicator: self.$showIndicatorDot,
                          minDataValue: .constant(self.data.points.map { $0.1 }.min()),
                          maxDataValue: .constant(self.data.points.map { $0.1 }.max()),
-                         color: color
+                         color: chartColor
+                         
+                         
                     )
                 }
                 .frame(width: frame.width, height: frame.height)
@@ -171,7 +177,7 @@ struct WidgetView_Previews: PreviewProvider {
                     (Date(timeInterval: 60*60*24*42, since: Date()),285.019),
                     (Date(timeInterval: 60*60*24*49, since: Date()),4)
                 ],
-                title: "Line chart", legend: "Basic", color: Color.blue, rateValue: 1, currentValue: .constant(0), selectedValue: .constant(nil), onValueSelected: { _ in
+                chartColor: Color.blue, currentValue: .constant(0), selectedValue: .constant(nil), onValueSelected: { _ in
 
             })
                 .environment(\.colorScheme, .light)
