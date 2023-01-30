@@ -16,7 +16,7 @@ public struct LineChartView: View {
     private let bgColor: Color
 
     @Environment(\.colorScheme) var colorScheme: ColorScheme
-    @ObservedObject var data:ChartData
+    @ObservedObject var data:ChartData 
 //    public var title: String
 //    public var legend: String?
 //    public var style: ChartStyle
@@ -139,7 +139,6 @@ public struct LineChartView: View {
                 self.touchLocation = value.location
                 self.showIndicatorDot = true
                 self.getClosestDataPoint(toPoint: value.location, width:geo.frame(in: .local).width, height: geo.frame(in: .local).height)
-                self.onValueSelected((Date(), 0))
             })
                 .onEnded({ value in
                     self.showIndicatorDot = false
@@ -158,6 +157,12 @@ public struct LineChartView: View {
         let index:Int = Int(round((toPoint.x)/stepWidth))
         if (index >= 0 && index < points.count){
             self.currentValue = points[index]
+            if let dateDouble = Double(data.points[index].0) {
+                let selectedData = Date(timeIntervalSince1970: dateDouble)
+                self.selectedValue = (selectedData, data.points[index].1)
+                self.onValueSelected((selectedData, data.points[index].1))
+                
+            }
             return CGPoint(x: CGFloat(index)*stepWidth, y: CGFloat(points[index])*stepHeight)
         }
         return .zero
