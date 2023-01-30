@@ -63,7 +63,7 @@ public struct LineChartView: View {
 //        self.style = style
 //        self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
         self.formSize = form!
-        frame = CGSize(width: self.formSize.width, height: self.formSize.height/2)
+        frame = CGSize(width: self.formSize.width, height: self.formSize.height)
 //        self.dropShadow = dropShadow!
 //        self.valueSpecifier = valueSpecifier!
 //        self.rateValue = rateValue
@@ -75,9 +75,9 @@ public struct LineChartView: View {
     
     public var body: some View {
         ZStack(alignment: .center){
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 0)
                 .fill(self.bgColor)
-                .frame(width: frame.width, height: 240, alignment: .center)
+                .frame(width: frame.width, height: frame.height, alignment: .center)
 //                .shadow(color: self.style.dropShadowColor, radius: self.dropShadow ? 8 : 0)
             VStack(alignment: .leading){
 //                if(!self.showIndicatorDot){
@@ -126,8 +126,6 @@ public struct LineChartView: View {
                          minDataValue: .constant(self.data.points.map { $0.1 }.min()),
                          maxDataValue: .constant(self.data.points.map { $0.1 }.max()),
                          color: chartColor
-                         
-                         
                     )
                 }
                 .frame(width: frame.width, height: frame.height)
