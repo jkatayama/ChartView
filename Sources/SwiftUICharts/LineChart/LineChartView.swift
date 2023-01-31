@@ -17,21 +17,16 @@ public struct LineChartView: View {
 
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @ObservedObject var data:ChartData 
-    
-//    public var formSize:CGSize
     @State private var touchLocation:CGPoint = .zero
     @State private var showIndicatorDot: Bool = false
     private let isDragGestureEnabled: Bool
-    @Binding var currentValue: Double?
-//    var frame: CGSize
-
+//    @Binding var currentValue: Double?
     
     public init(data: [(Date, Double)],
                 isDragGestureEnabled: Bool,
                 chartColor: Color,
                 bgColor: Color = .white,
-                form: CGSize? = ChartForm.extraLarge,
-                currentValue: Binding<Double?>,
+//                currentValue: Binding<Double?>,
                 selectedValue: Binding<(Date, Double)?>,
                 onValueSelected: @escaping (((Date, Double)?) -> ())
     ) {
@@ -39,9 +34,7 @@ public struct LineChartView: View {
         self.onValueSelected = onValueSelected
         self.data = ChartData(numberValues: data.map { ($0.0.timeIntervalSince1970, $0.1) })
         self.isDragGestureEnabled = isDragGestureEnabled
-//        self.formSize = form!
-//        frame = CGSize(width: self.formSize.width, height: self.formSize.height)
-        self._currentValue = currentValue
+//        self._currentValue = currentValue
         self.chartColor = chartColor
         self.bgColor = bgColor
 
@@ -91,7 +84,7 @@ public struct LineChartView: View {
         
         let index:Int = Int(round((toPoint.x)/stepWidth))
         if (index >= 0 && index < points.count){
-            self.currentValue = points[index]
+//            self.currentValue = points[index]
             if let dateDouble = Double(data.points[index].0) {
                 let selectedData = Date(timeIntervalSince1970: dateDouble)
                 self.selectedValue = (selectedData, data.points[index].1)
@@ -121,7 +114,6 @@ struct WidgetView_Previews: PreviewProvider {
                     ],
                     isDragGestureEnabled: true,
                     chartColor: Color.blue,
-                    currentValue: .constant(0),
                     selectedValue: .constant(nil),
                     onValueSelected: { _ in
 
