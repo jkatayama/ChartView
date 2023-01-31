@@ -118,7 +118,7 @@ public struct MultiLineChartView: View {
                                  minDataValue: .constant(self.globalMin),
                                  maxDataValue: .constant(self.globalMax),
                                  showBackground: false,
-                                 color: Colors.DarkPurple,
+                                 color: Colors.DarkPurple, pointMarkColor: .purple,
                                  index: i)
                         }
                     }

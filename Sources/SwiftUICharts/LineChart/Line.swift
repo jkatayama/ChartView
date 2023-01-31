@@ -21,7 +21,8 @@ public struct Line: View {
     // areaMark
     @State var showBackground: Bool = true
     public let color: Color
-    private let gradient: Gradient// = GradientColor(start: color, end: color)
+    public let pointMarkColor: Color
+    private let gradient: Gradient
     var index:Int = 0
     let padding:CGFloat = 0
     var curvedLines: Bool = true
@@ -84,7 +85,7 @@ public struct Line: View {
                 self.showFull = false
             }
             if(self.showIndicator) {
-                IndicatorPoint()
+                IndicatorPoint(color: pointMarkColor)
                     .position(self.getClosestPointOnPath(touchLocation: self.touchLocation))
                     .rotationEffect(.degrees(180), anchor: .center)
                     .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
@@ -92,7 +93,7 @@ public struct Line: View {
         }
     }
     
-    public init(data: ChartData, frame: Binding<CGRect>, touchLocation: Binding<CGPoint>, showIndicator: Binding<Bool>, minDataValue: Binding<Double?>, maxDataValue: Binding<Double?>, showBackground: Bool = true, color: Color, index: Int = 0) {
+    public init(data: ChartData, frame: Binding<CGRect>, touchLocation: Binding<CGPoint>, showIndicator: Binding<Bool>, minDataValue: Binding<Double?>, maxDataValue: Binding<Double?>, showBackground: Bool = true, color: Color, pointMarkColor: Color, index: Int = 0) {
         self.data = data
         self._frame = frame
         self._touchLocation = touchLocation
@@ -102,6 +103,7 @@ public struct Line: View {
         self.index = index
         self.showBackground = showBackground
         self.color = color
+        self.pointMarkColor = pointMarkColor
         
         self.gradient = Gradient(colors: [color,color])
         
@@ -118,19 +120,6 @@ public struct Line: View {
                         startPoint: .bottom,
                         endPoint: .top
                     )
-
-//        ChartData(numberValues: [(0.1, 0.12)])
-//            gradient: ,
-//            startPoint: .top,
-//            endPoint: .bottom
-//        )
-//GradientColor(start: color, end: color)
-        
-//        self._showFull = showFull
-//        self._showBackground = showBackground
-//        self._gradient = gradient
-//        self._index = index
-//        self._curvedLines = curvedLines
     }
     
     func getClosestPointOnPath(touchLocation: CGPoint) -> CGPoint {
@@ -151,12 +140,12 @@ struct Line_Previews: PreviewProvider {
                      showIndicator: .constant(true),
                      minDataValue: .constant([12,-230,10,54].min()),
                      maxDataValue: .constant([12,-230,10,54].max()),
-                     color: Colors.OrangeStart
+                    color: Colors.OrangeStart, pointMarkColor: .purple
                 )
             }.frame(width: 320, height: 160)
             
             GeometryReader{ geometry in
-                Line(data: TestData.dataEmpty, frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([37,72,51,22,0,0,0,0,0].min()), maxDataValue: .constant([37,72,51,22,0,0,0,0,0].max()), color: Colors.color2Accent)
+                Line(data: TestData.dataEmpty, frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([37,72,51,22,0,0,0,0,0].min()), maxDataValue: .constant([37,72,51,22,0,0,0,0,0].max()), color: Colors.color2Accent, pointMarkColor: .purple)
             }.frame(width: 320, height: 160)
             
             GeometryReader{ geometry in
@@ -172,7 +161,7 @@ struct Line_Previews: PreviewProvider {
                      showIndicator: .constant(true),
                      minDataValue: .constant([12,-230,10,54].min()),
                      maxDataValue: .constant([12,-230,10,54].max()),
-                     color: Colors.GradinetUpperBlue1
+                    color: Colors.GradinetUpperBlue1, pointMarkColor: .purple
                 )
             }.frame(width: 320, height: 160)
 
