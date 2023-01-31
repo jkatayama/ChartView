@@ -11,7 +11,6 @@ import SwiftUI
 public struct LineChartView: View {
     // selected value when dragged
     var onValueSelected: (((Date, Double)?) -> ())
-    @Binding var selectedValue: (Date, Double)?
     private let chartColor: Color
     private let bgColor: Color
 
@@ -26,11 +25,8 @@ public struct LineChartView: View {
                 isDragGestureEnabled: Bool,
                 chartColor: Color,
                 bgColor: Color = .white,
-//                currentValue: Binding<Double?>,
-                selectedValue: Binding<(Date, Double)?>,
                 onValueSelected: @escaping (((Date, Double)?) -> ())
     ) {
-        self._selectedValue = selectedValue
         self.onValueSelected = onValueSelected
         self.data = ChartData(numberValues: data.map { ($0.0.timeIntervalSince1970, $0.1) })
         self.isDragGestureEnabled = isDragGestureEnabled
@@ -84,10 +80,8 @@ public struct LineChartView: View {
         
         let index:Int = Int(round((toPoint.x)/stepWidth))
         if (index >= 0 && index < points.count){
-//            self.currentValue = points[index]
             if let dateDouble = Double(data.points[index].0) {
                 let selectedData = Date(timeIntervalSince1970: dateDouble)
-                self.selectedValue = (selectedData, data.points[index].1)
                 self.onValueSelected((selectedData, data.points[index].1))
                 
             }
@@ -114,7 +108,6 @@ struct WidgetView_Previews: PreviewProvider {
                     ],
                     isDragGestureEnabled: true,
                     chartColor: Color.blue,
-                    selectedValue: .constant(nil),
                     onValueSelected: { _ in
 
                 })
