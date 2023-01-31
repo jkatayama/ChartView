@@ -19,7 +19,6 @@ public struct LineChartView: View {
     @State private var touchLocation:CGPoint = .zero
     @State private var showIndicatorDot: Bool = false
     private let isDragGestureEnabled: Bool
-//    @Binding var currentValue: Double?
     
     public init(data: [(Date, Double)],
                 isDragGestureEnabled: Bool,
@@ -30,10 +29,8 @@ public struct LineChartView: View {
         self.onValueSelected = onValueSelected
         self.data = ChartData(numberValues: data.map { ($0.0.timeIntervalSince1970, $0.1) })
         self.isDragGestureEnabled = isDragGestureEnabled
-//        self._currentValue = currentValue
         self.chartColor = chartColor
         self.bgColor = bgColor
-
     }
     
     public var body: some View {
@@ -50,7 +47,7 @@ public struct LineChartView: View {
                              showIndicator: self.$showIndicatorDot,
                              minDataValue: .constant(self.data.points.map { $0.1 }.min()),
                              maxDataValue: .constant(self.data.points.map { $0.1 }.max()),
-                             color: chartColor, pointMarkColor: .purple
+                             color: chartColor, pointMarkColor: chartColor
                         )
                     }
                     .frame(width: geo.frame(in: .local).width, height: geo.frame(in: .local).height)
