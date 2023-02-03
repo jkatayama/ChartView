@@ -8,7 +8,8 @@
 
 import SwiftUI
 
-public struct Line: View {
+public struct Line: View {          
+    private let areaMarkColor: LinearGradient
     @ObservedObject var data: ChartData
     @Binding var frame: CGRect
     @Binding var touchLocation: CGPoint
@@ -16,10 +17,14 @@ public struct Line: View {
     @Binding var minDataValue: Double?
     @Binding var maxDataValue: Double?
     @State private var showFull: Bool = false
+    
+    // areaMark
     @State var showBackground: Bool = true
-    var gradient: GradientColor = GradientColor(start: Colors.GradientPurple, end: Colors.GradientNeonBlue)
+    public let color: Color
+    public let pointMarkColor: Color
+    private let gradient: Gradient
     var index:Int = 0
-    let padding:CGFloat = 30
+    let padding:CGFloat = 0
     var curvedLines: Bool = true
     var stepWidth: CGFloat {
         if data.points.count < 2 {
@@ -62,18 +67,17 @@ public struct Line: View {
         ZStack {
             if(self.showFull && self.showBackground){
                 self.closedPath
-                    .fill(LinearGradient(gradient: Gradient(colors: [Colors.GradientUpperBlue, .white]), startPoint: .bottom, endPoint: .top))
+                    .fill(areaMarkColor)
                     .rotationEffect(.degrees(180), anchor: .center)
                     .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                     .transition(.opacity)
-                    .animation(.easeIn(duration: 1.6))
+
             }
             self.path
                 .trim(from: 0, to: self.showFull ? 1:0)
-                .stroke(LinearGradient(gradient: gradient.getGradient(), startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+                .stroke(LinearGradient(gradient: gradient, startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 1, lineJoin: .round))
                 .rotationEffect(.degrees(180), anchor: .center)
                 .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
-                .animation(Animation.easeOut(duration: 1.2).delay(Double(self.index)*0.4))
                 .onAppear {
                     self.showFull = true
             }
@@ -81,12 +85,41 @@ public struct Line: View {
                 self.showFull = false
             }
             if(self.showIndicator) {
-                IndicatorPoint()
+                IndicatorPoint(color: pointMarkColor)
                     .position(self.getClosestPointOnPath(touchLocation: self.touchLocation))
                     .rotationEffect(.degrees(180), anchor: .center)
                     .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
             }
         }
+    }
+    
+    public init(data: ChartData, frame: Binding<CGRect>, touchLocation: Binding<CGPoint>, showIndicator: Binding<Bool>, minDataValue: Binding<Double?>, maxDataValue: Binding<Double?>, showBackground: Bool = true, color: Color, pointMarkColor: Color, index: Int = 0) {
+        self.data = data
+        self._frame = frame
+        self._touchLocation = touchLocation
+        self._showIndicator = showIndicator
+        self._minDataValue = minDataValue
+        self._maxDataValue = maxDataValue
+        self.index = index
+        self.showBackground = showBackground
+        self.color = color
+        self.pointMarkColor = pointMarkColor
+        
+        self.gradient = Gradient(colors: [color,color])
+        
+        self.areaMarkColor = LinearGradient(
+                        gradient: Gradient (
+                            colors: [
+                                color.opacity(0.5),
+                                color.opacity(0.25),
+                                color.opacity(0.12),
+                                color.opacity(0.05),
+                                color.opacity(0),
+                            ]
+                        ),
+                        startPoint: .bottom,
+                        endPoint: .top
+                    )
     }
     
     func getClosestPointOnPath(touchLocation: CGPoint) -> CGPoint {
@@ -98,8 +131,41 @@ public struct Line: View {
 
 struct Line_Previews: PreviewProvider {
     static var previews: some View {
-        GeometryReader{ geometry in
-            Line(data: ChartData(points: [12,-230,10,54]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant(nil), maxDataValue: .constant(nil))
-        }.frame(width: 320, height: 160)
+        Group {
+            GeometryReader{ geometry in
+                Line(
+                    data: ChartData(points: [12,-230,10,54]),
+                     frame: .constant(geometry.frame(in: .local)),
+                     touchLocation: .constant(CGPoint(x: 100, y: 12)),
+                     showIndicator: .constant(true),
+                     minDataValue: .constant([12,-230,10,54].min()),
+                     maxDataValue: .constant([12,-230,10,54].max()),
+                    color: Colors.OrangeStart, pointMarkColor: .purple
+                )
+            }.frame(width: 320, height: 160)
+            
+            GeometryReader{ geometry in
+                Line(data: TestData.dataEmpty, frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant([37,72,51,22,0,0,0,0,0].min()), maxDataValue: .constant([37,72,51,22,0,0,0,0,0].max()), color: Colors.color2Accent, pointMarkColor: .purple)
+            }.frame(width: 320, height: 160)
+            
+            GeometryReader{ geometry in
+                Line(
+                    data: ChartData(numberValues: [
+                        (1674753304, 12),
+                        (1674753305, -230),
+                        (1674753306, 10),
+                        (1674753307, 54)
+                    ]),
+                     frame: .constant(geometry.frame(in: .local)),
+                     touchLocation: .constant(CGPoint(x: 100, y: 12)),
+                     showIndicator: .constant(true),
+                     minDataValue: .constant([12,-230,10,54].min()),
+                     maxDataValue: .constant([12,-230,10,54].max()),
+                    color: Colors.GradinetUpperBlue1, pointMarkColor: .purple
+                )
+            }.frame(width: 320, height: 160)
+
+
+        }
     }
 }

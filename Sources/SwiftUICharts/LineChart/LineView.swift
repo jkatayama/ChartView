@@ -74,7 +74,7 @@ public struct LineView: View {
                              minDataValue: .constant(nil),
                              maxDataValue: .constant(nil),
                              showBackground: false,
-                             gradient: self.style.gradientColor
+                             color: Colors.DarkPurple, pointMarkColor: .purple
                         )
                         .offset(x: 30, y: 0)
                         .onAppear(){
