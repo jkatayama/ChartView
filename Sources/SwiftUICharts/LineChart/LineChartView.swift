@@ -71,9 +71,15 @@ public struct LineChartView: View {
     }
     
     @discardableResult func getClosestDataPoint(toPoint: CGPoint, width:CGFloat, height: CGFloat) -> CGPoint {
+        
         let points = self.data.onlyPoints()
+        
+        guard let pointMax = points.max(), let pointMin = points.min() else {
+            return .zero
+        }
+        
         let stepWidth: CGFloat = width / CGFloat(points.count-1)
-        let stepHeight: CGFloat = height / CGFloat(points.max()! + points.min()!)
+        let stepHeight: CGFloat = height / CGFloat(pointMax + pointMin)
         
         let index:Int = Int(round((toPoint.x)/stepWidth))
         if (index >= 0 && index < points.count){
